@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { FaRegFileImage, FaRegUser } from "react-icons/fa";
-import { addItem } from "../fireBase/fireBaseAuth";
+import { addItem } from "../fireBase/fireBaseUtils";
 import { validateAddItemForm } from "../utils/validateForms";
 import { UserContext } from "../contexts/UserContextProvider";
 import { v4 as uuidv4 } from "uuid"; 

@@ -6,18 +6,13 @@ export const AuthContext = createContext();
 
 const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
-      setLoading(false);
     });
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
   return (
     <AuthContext.Provider value={{ currentUser }}>
       {children}

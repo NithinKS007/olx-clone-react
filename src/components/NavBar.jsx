@@ -1,10 +1,13 @@
-import React, { useReducer, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useReducer, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import olxLogo from "../assets/olxLogo.svg";
-import profileLogo from "../assets/profileLogo.jpg";
+import { FaUser } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
-import { HiMenu } from "react-icons/hi";
-import { HiX } from "react-icons/hi";
+import { HiMenu, HiX } from "react-icons/hi";
+import { SearchContext } from "../contexts/SearchContextProvider";
+import { AuthContext } from "../contexts/AuthContextProvider";
+import { UserContext } from "../contexts/UserContextProvider";
+import { signOutUser } from "../fireBase/fireBaseUtils";
 
 const NavBar = () => {
   const initialState = {
@@ -20,17 +23,23 @@ const NavBar = () => {
     }
   };
 
-  const [state, dispatch] = useReducer(menuReducer, initialState);
-  const [search, setSearch] = useState("");
-
   const toggleMenu = () => {
     dispatch({ type: "TOGGLE_MENU" });
   };
+  const [state, dispatch] = useReducer(menuReducer, initialState);
+  const { searchQuery, handleSearchChange } = useContext(SearchContext);
+  const { currentUser } = useContext(AuthContext);
+  const { userData } = useContext(UserContext);
+  const navigate = useNavigate();
 
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
+  const handleSearch = (searchQuery) => {
+    handleSearchChange(searchQuery);
   };
-  
+  const handleLogout = async () => {
+    await signOutUser();
+    navigate("/signin");
+  };
+
   return (
     <div className="flex items-center justify-between px-6 py-3 bg-white shadow-md">
       <div className="flex items-center space-x-4 w-2/3">
@@ -45,11 +54,15 @@ const NavBar = () => {
           <div className="flex w-full">
             <input
               type="text"
-              onChange={handleSearch}
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
               className="px-4 py-2 flex-grow border-black border-2 rounded-l-md"
               placeholder="Find Cars, Mobile Phones and more..."
             />
-            <button className="bg-black text-gray-50 text-2xl px-3 py-2 rounded-r-md">
+            <button
+              onClick={() => handleSearch(searchQuery)}
+              className="bg-[#1f2937] text-gray-50 text-2xl px-3 py-2 rounded-r-md"
+            >
               <IoSearchOutline />
             </button>
           </div>
@@ -57,11 +70,25 @@ const NavBar = () => {
       </div>
 
       <div className="flex items-center space-x-4">
-        <img
-          src={profileLogo}
-          alt="Profile"
-          className="rounded-full h-8 w-8 hidden lg:block"
-        />
+        {currentUser ? (
+          <>
+            <FaUser className="text-gray-500 h-8 w-8 rounded-full" />
+            <span className="text-lg hidden lg:block">{userData?.name}</span>
+            <button
+              onClick={handleLogout}
+              className="bg-[#1f2937] text-white px-4 py-2 rounded-md hidden lg:block"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <Link
+            to="/signin"
+            className="bg-[#1f2937] text-white px-4 py-2 rounded-md hidden lg:block"
+          >
+            Login
+          </Link>
+        )}
         <Link
           to={"/addItem"}
           className="border-2 border-black font-bold text-black px-4 py-2 rounded-2xl hidden lg:block"
@@ -94,11 +121,7 @@ const NavBar = () => {
             </button>
           </div>
           <div className="flex items-center justify-between">
-            <img
-              src={profileLogo}
-              alt="Profile"
-              className="rounded-full h-8 w-8"
-            />
+          <FaUser className="text-gray-500 h-8 w-8 rounded-full" />
             <Link
               to={"/addItem"}
               className="border-2 border-black font-bold text-black px-4 py-2 rounded-2xl"
@@ -106,6 +129,21 @@ const NavBar = () => {
               <span className="text-lg"> + </span> SELL
             </Link>
           </div>
+          {currentUser ? (
+            <button
+              onClick={handleLogout}
+              className="bg-[#1f2937] text-white px-4 py-2 rounded-md w-full"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/signin"
+              className="bg-[#1f2937] text-white px-4 py-2 rounded-md w-full"
+            >
+              Login
+            </Link>
+          )}
         </div>
       )}
     </div>

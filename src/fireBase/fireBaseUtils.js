@@ -51,9 +51,9 @@ const registerUser = async (name, email, phone, password) => {
       toast.error("Error creating account.");
     }
   } catch (error) {
-    toast.error(`Sign-up failed:${error.message}`);
-    console.log("Sign-up failed", error);
-    console.log("Error code Sign-up", error.code);
+    const errorMessage = getErrorMessage(error.code);
+    toast.error(errorMessage);
+    console.log("Register error:", error.code);
   }
 };
 
@@ -68,11 +68,11 @@ const signInUser = async (email, password) => {
       password
     );
     toast.success("Login successful!");
-    console.log("Login successful");
     return signInSuccess;
   } catch (error) {
-    toast.error(`Login error: ${error.message}`);
-    console.log("Login error", error.code);
+    const errorMessage = getErrorMessage(error.code);
+    toast.error(errorMessage);
+    console.log("Login error:", error.code);
   }
 };
 
@@ -83,8 +83,9 @@ const signOutUser = async () => {
     toast.success("Logout successful!");
     console.log("Logout successfully");
   } catch (error) {
-    toast.error("Logout failed: " + error.message);
-    console.log("Logout failed:", error);
+    const errorMessage = getErrorMessage(error.code);
+    toast.error(errorMessage);
+    console.log("Logout error:", error.code);
   }
 };
 
@@ -139,7 +140,9 @@ const addItem = async (
 
     toast.success("Item added successfully");
   } catch (error) {
-    toast.error(`Error adding item: ${error.message}`);
+    const errorMessage = getErrorMessage(error.code);
+    toast.error(errorMessage);
+    console.log("Add item error:", error.code);
   }
 };
 
@@ -153,7 +156,9 @@ const fetchSellItems = async () => {
 
     return itemsList;
   } catch (error) {
-    console.log("error while fetching the selling items", error);
+    const errorMessage = getErrorMessage(error.code);
+    toast.error(errorMessage);
+    console.log("Fetch items error:", error.code);
   }
 };
 
@@ -177,7 +182,30 @@ const fetchSellItemDetails = async (id) => {
       return itemData;
     }
   } catch (error) {
-    console.log("error while fetching item details", error);
+    const errorMessage = getErrorMessage(error.code);
+    toast.error(errorMessage);
+    console.log("Fetch item details error:", error.code);
+  }
+};
+
+const getErrorMessage = (errorCode) => {
+  switch (errorCode) {
+    case 'auth/invalid-credential':
+      return "The provided credentials are invalid. Please check your email and password.";
+    case 'auth/user-not-found':
+      return "No user found with this email. Please check your email or sign up.";
+    case 'auth/wrong-password':
+      return "Incorrect password. Please try again.";
+    case 'auth/too-many-requests':
+      return "Too many login attempts. Please try again later.";
+    case 'auth/email-already-in-use':
+      return "The email is already in use. Please use a different email.";
+    case 'auth/weak-password':
+      return "The password is too weak. Please choose a stronger password.";
+    case 'auth/account-exists-with-different-credential':
+      return "An account already exists with the same email but a different login method.";
+    default:
+      return "An error occurred. Please try again.";
   }
 };
 export {

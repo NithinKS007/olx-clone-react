@@ -4,9 +4,11 @@ import Footer from "../components/Footer";
 import ItemCard from "../components/ItemCard";
 const HomePage = () => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <NavBar />
-      <ItemCard/>
+      <div className="flex-grow">
+        <ItemCard />
+      </div>
       <Footer />
     </div>
   );

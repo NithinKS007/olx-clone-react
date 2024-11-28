@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerUser, signInUser } from "../fireBase/fireBaseAuth";
+import { registerUser, signInUser } from "../fireBase/fireBaseUtils";
 import { validateUserAuthForm } from "../utils/validateForms";
 import { useNavigate } from "react-router-dom";
 
@@ -40,7 +40,7 @@ const AuthForm = () => {
       const signInSuccess = await signInUser(email, password);
       if (signInSuccess) {
         setTimeout(() => {
-          console.log("Navigating to home...");
+          console.log("Navigating to home");
           navigate("/");
         }, 3000);
 
@@ -58,7 +58,7 @@ const AuthForm = () => {
 
       if (registerSuccess) {
         setTimeout(() => {
-          console.log("Navigating to home...");
+          console.log("Navigating to home");
           navigate("/");
         }, 3000);
         setFormData({
