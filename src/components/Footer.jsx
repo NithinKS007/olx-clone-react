@@ -8,7 +8,7 @@ import olx from "../assets/olx.svg";
 
 const Footer = () => {
   return (
-    <div className="bg-[#002f34] text-white py-8 px-4">
+    <div className="bg-[#1f2937] text-white py-8 px-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 justify-items-center">
         <img className="h-20" src={cartrade_tech} alt="Cartrade Tech" />
         <img className="h-20" src={olx} alt="Olx" />

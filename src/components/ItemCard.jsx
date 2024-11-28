@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchSellItems } from "../fireBase/fireBaseAuth";
+import { Link } from "react-router-dom";
 
 const ItemCard = () => {
   const [cardData, setCardData] = useState([]);
@@ -10,8 +11,6 @@ const ItemCard = () => {
       try {
         const sellItemsList = await fetchSellItems();
 
-        console.log("fetched list",sellItemsList);
-        
         if (sellItemsList) {
           setCardData(sellItemsList);
           setLoading(false);
@@ -39,14 +38,15 @@ const ItemCard = () => {
     return date.toLocaleDateString();
   };
 
-  console.log("card Data",cardData);
+  console.log("card Data", cardData);
 
   return (
     <div className="flex flex-wrap gap-4 p-4">
       {cardData.map((card) => (
-        <div
-          className="bg-white border border-gray-300 rounded-lg overflow-hidden w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
+        <Link
+          to={`/item/${card.id}`}
           key={card.id}
+          className="bg-white border border-gray-300 rounded-lg overflow-hidden w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
         >
           <img
             className="w-full h-60 p-2 object-cover"
@@ -55,11 +55,17 @@ const ItemCard = () => {
           />
           <div className="p-4">
             <div className="text-xl font-bold text-gray-800">₹{card.price}</div>
-            <div className="text-lg font-semibold text-gray-700 mt-1">{card.itemName}</div>
-            <div className="text-sm text-gray-500 mt-2">{card.state}, {card.place}</div>
-            <div className="text-xs text-gray-400 mt-1">{formatDate(card.createdAt)}</div>
+            <div className="text-lg font-semibold text-gray-700 mt-1">
+              {card.itemName}
+            </div>
+            <div className="text-sm text-gray-500 mt-2">
+              {card.state}, {card.place}
+            </div>
+            <div className="text-xs text-gray-400 mt-1">
+              {formatDate(card.createdAt)}
+            </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

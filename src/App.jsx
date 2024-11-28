@@ -1,6 +1,7 @@
 import AuthFormPage from "./pages/AuthFormPage";
 import HomePage from "./pages/HomePage";
 import AddItemPage from "./pages/AddItemPage";
+import ItemDetailPage from "./pages/ItemDetailPage";
 import AuthContextProvider from "./contexts/AuthContextProvider";
 import UserContextProvider from "./contexts/UserContextProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -29,6 +30,7 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/item/:id" element={<ItemDetailPage />} />
             </Routes>
           </div>
         </UserContextProvider>

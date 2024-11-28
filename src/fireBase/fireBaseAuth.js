@@ -10,6 +10,8 @@ import {
   setDoc,
   getDoc,
   getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { auth, db } from "./fireBaseConfig";
 import { toast } from "react-toastify";
@@ -155,4 +157,36 @@ const fetchSellItems = async () => {
   }
 };
 
-export { auth, db, registerUser, signInUser, signOutUser, addItem ,fetchSellItems };
+const fetchSellItemDetails = async (id) => {
+  try {
+ 
+    const docRef = doc(db, "items", id);  
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const userCollection = collection(db, "users");
+      const q = query(userCollection, where("uid", "==", data.userId));
+      const userSnap = await getDocs(q);
+      const userDetails = userSnap.docs[0]?.data();
+
+      const itemData = {
+        ...data,
+        user: userDetails,
+      };
+      return itemData;
+    }
+  } catch (error) {
+    console.log("error while fetching item details", error);
+  }
+};
+export {
+  auth,
+  db,
+  registerUser,
+  signInUser,
+  signOutUser,
+  addItem,
+  fetchSellItems,
+  fetchSellItemDetails,
+};
