@@ -3,11 +3,17 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-
-import { addDoc, collection } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+} from "firebase/firestore";
 import { auth, db } from "./fireBaseConfig";
 import { toast } from "react-toastify";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import handleImageUpload from "../utils/cloudinary";
 
 const registerUser = async (name, email, phone, password) => {
   try {
@@ -24,13 +30,24 @@ const registerUser = async (name, email, phone, password) => {
 
     const userData = response.user;
 
-    await addDoc(collection(db, "users"), {
+    await setDoc(doc(db, "users", userData.uid), {
       uid: userData.uid,
       name,
+      authProvider: "local",
       email,
       phone,
     });
-    toast.success("Account created successfully!");
+
+    const userDocRef = doc(db, "users", userData.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      toast.success("Account created successfully!");
+      return userData;
+    } else {
+      toast.error("Error creating account.");
+    }
   } catch (error) {
     toast.error(`Sign-up failed:${error.message}`);
     console.log("Sign-up failed", error);
@@ -43,9 +60,14 @@ const signInUser = async (email, password) => {
     email = String(email);
     password = String(password);
 
-    await signInWithEmailAndPassword(auth, email, password);
+    const signInSuccess = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     toast.success("Login successful!");
     console.log("Login successful");
+    return signInSuccess;
   } catch (error) {
     toast.error(`Login error: ${error.message}`);
     console.log("Login error", error.code);
@@ -68,6 +90,7 @@ const addItem = async (
   brand,
   year,
   itemName,
+  itemId,
   state,
   place,
   zipCode,
@@ -76,29 +99,28 @@ const addItem = async (
   username,
   phone,
   selectedImage,
-  userData
+  userId
 ) => {
   try {
-
-    const imageUrl = selectedImage ? await handleImageUpload(selectedImage) : null;
+    const imageUrl = await handleImageUpload(selectedImage);
 
     brand = String(brand);
     year = String(year);
     itemName = String(itemName);
+    itemId = String(itemId);
     state = String(state);
     place = String(place);
-    zipCode = String(zipCode);
+    zipCode = Number(zipCode);
     description = String(description);
     price = Number(price);
     username = String(username);
     phone = String(phone);
 
-    const userId = userData ? userData?.uid : null
-
     const itemData = {
       brand,
       year,
       itemName,
+      itemId,
       state,
       place,
       zipCode,
@@ -108,10 +130,10 @@ const addItem = async (
       phone,
       createdAt: new Date(),
       userId,
-      imageUrl
+      imageUrl,
     };
 
-      await addDoc(collection(db, "items"),itemData);
+    await addDoc(collection(db, "items"), itemData);
 
     toast.success("Item added successfully");
   } catch (error) {
@@ -119,15 +141,18 @@ const addItem = async (
   }
 };
 
-const storage = getStorage();
-const handleImageUpload = async (file) => {
-  const imageRef = ref(storage, `images/${file?.name}`);
-  await uploadBytes(imageRef, file);
+const fetchSellItems = async () => {
+  try {
+    const items = await getDocs(collection(db, "items"));
 
-  const downloadUrl = await getDownloadURL(imageRef);
+    const itemsList = items.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
 
-  return downloadUrl;
+    return itemsList;
+  } catch (error) {
+    console.log("error while fetching the selling items", error);
+  }
 };
 
-
-export { auth, db, registerUser, signInUser, signOutUser, addItem };
+export { auth, db, registerUser, signInUser, signOutUser, addItem ,fetchSellItems };

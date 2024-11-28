@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaRegFileImage, FaRegUser } from "react-icons/fa";
 import { addItem } from "../fireBase/fireBaseAuth";
 import { validateAddItemForm } from "../utils/validateForms";
+import { UserContext } from "../contexts/UserContextProvider";
+import { v4 as uuidv4 } from "uuid"; 
 
 const AddItem = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const { userData } = useContext(UserContext);
+  if (!userData) {
+    return <div>Loading user data...</div>; 
+  }
   const [formData, setFormData] = useState({
     brand: "",
     year: "",
@@ -30,13 +36,12 @@ const AddItem = () => {
   };
 
   const handleImageChange = (event) => {
-    console.log(event.target.files[0]);
-
     const file = event.target.files[0];
-    if (file) {
-      setSelectedImage(file);
-      setImagePreview(URL.createObjectURL(file));
+    if (!file) {
+      return;
     }
+    setSelectedImage(file);
+    setImagePreview(URL.createObjectURL(file));
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -46,6 +51,7 @@ const AddItem = () => {
       setErrors(validationErrors);
       return;
     }
+    const itemId = uuidv4()
     const {
       brand,
       year,
@@ -64,6 +70,7 @@ const AddItem = () => {
         brand,
         year,
         itemName,
+        itemId,
         state,
         place,
         zipCode,
@@ -71,8 +78,24 @@ const AddItem = () => {
         price,
         username,
         phone,
-        selectedImage
+        selectedImage,
+        userData?.uid
       );
+      setFormData({
+        brand: "",
+        year: "",
+        itemName: "",
+        state: "",
+        place: "",
+        zipCode: "",
+        description: "",
+        price: "",
+        username: "",
+        phone: "",
+      });
+      setSelectedImage(null);
+      setImagePreview(null);
+      setErrors({});
     } catch (error) {
       console.error("Error submitting form: ", error);
     }
@@ -80,7 +103,7 @@ const AddItem = () => {
 
   return (
     <div className="flex justify-center mb-10">
-     <form className="flex flex-col mt-10 rounded-md w-full sm:w-10/12 md:w-8/12 lg:w-7/12 bg-white shadow-md">
+      <form className="flex flex-col mt-10 rounded-md w-full sm:w-10/12 md:w-8/12 lg:w-7/12 bg-white shadow-md">
         <h1 className="font-semibold text-xl p-5 border-b border-gray-300">
           POST YOUR AD
         </h1>
@@ -98,7 +121,9 @@ const AddItem = () => {
               placeholder="Brand"
               className="w-full p-3 text-lg border border-gray-300 rounded-md outline-none"
             />
-             {errors.brand && <span className="text-red-500 text-sm">{errors.brand}</span>} 
+            {errors.brand && (
+              <span className="text-red-500 text-sm">{errors.brand}</span>
+            )}
           </div>
           <div className="mb-5">
             <label className="flex gap-3 mb-2 font-medium">Year</label>
@@ -110,7 +135,9 @@ const AddItem = () => {
               placeholder="Year"
               className="w-full p-3 text-lg border border-gray-300 rounded-md outline-none"
             />
-            {errors.year && <span className="text-red-500 text-sm">{errors.year}</span>} 
+            {errors.year && (
+              <span className="text-red-500 text-sm">{errors.year}</span>
+            )}
           </div>
           <div className="mb-5">
             <label className="flex gap-3 mb-2 font-medium">Item Name</label>
@@ -122,7 +149,9 @@ const AddItem = () => {
               placeholder="Item Name"
               className="w-full p-3 text-lg border border-gray-300 rounded-md outline-none"
             />
-             {errors.itemName && <span className="text-red-500 text-sm">{errors.itemName}</span>} 
+            {errors.itemName && (
+              <span className="text-red-500 text-sm">{errors.itemName}</span>
+            )}
           </div>
 
           <div className="mb-5 flex flex-row align-middle gap-4">
@@ -136,7 +165,9 @@ const AddItem = () => {
                 placeholder="State"
                 className="w-full p-3 text-lg border border-gray-300 rounded-md outline-none"
               />
-              {errors.state && <span className="text-red-500 text-sm">{errors.state}</span>} 
+              {errors.state && (
+                <span className="text-red-500 text-sm">{errors.state}</span>
+              )}
             </div>
 
             <div>
@@ -149,7 +180,9 @@ const AddItem = () => {
                 placeholder="Place"
                 className="w-full p-3 text-lg border border-gray-300 rounded-md outline-none"
               />
-              {errors.place && <span className="text-red-500 text-sm">{errors.place}</span>} 
+              {errors.place && (
+                <span className="text-red-500 text-sm">{errors.place}</span>
+              )}
             </div>
 
             <div>
@@ -162,7 +195,9 @@ const AddItem = () => {
                 placeholder="Zip Code"
                 className="w-full p-3 text-lg border border-gray-300 rounded-md outline-none"
               />
-              {errors.zipCode && <span className="text-red-500 text-sm">{errors.zipCode}</span>} 
+              {errors.zipCode && (
+                <span className="text-red-500 text-sm">{errors.zipCode}</span>
+              )}
             </div>
           </div>
           <div className="mb-5">
@@ -174,7 +209,9 @@ const AddItem = () => {
               onChange={handleChange}
               className="w-full p-3 text-lg border border-gray-300 rounded-md outline-none"
             />
-             {errors.description && <span className="text-red-500 text-sm">{errors.description}</span>} 
+            {errors.description && (
+              <span className="text-red-500 text-sm">{errors.description}</span>
+            )}
           </div>
         </div>
         <h1 className="font-semibold text-xl p-5">SET A PRICE</h1>
@@ -188,7 +225,9 @@ const AddItem = () => {
             placeholder="Price"
             className="w-full p-3 text-lg border border-gray-300 rounded-md outline-none"
           />
-            {errors.price && <span className="text-red-500 text-sm">{errors.price}</span>}
+          {errors.price && (
+            <span className="text-red-500 text-sm">{errors.price}</span>
+          )}
         </div>
         <h1 className="font-semibold text-xl p-5">ADD IMAGES</h1>
         <div className="px-5 pb-5 border-b border-gray-300 flex items-center gap-8">
@@ -211,7 +250,9 @@ const AddItem = () => {
               />
             </div>
           ) : null}
-           {errors.image && <span className="text-red-500 text-sm">{errors.image}</span>}
+          {errors.image && (
+            <span className="text-red-500 text-sm">{errors.image}</span>
+          )}
         </div>
 
         <h1 className="font-semibold text-xl p-5">REVIEW YOUR DETAILS</h1>
@@ -232,7 +273,9 @@ const AddItem = () => {
                 placeholder="Name"
                 className="p-3 text-lg border border-gray-300 rounded-md outline-none w-full"
               />
-              {errors.username && <span className="text-red-500 text-sm">{errors.username}</span>}
+              {errors.username && (
+                <span className="text-red-500 text-sm">{errors.username}</span>
+              )}
             </div>
             <div className="flex flex-col w-full">
               <label className="mb-2 font-medium flex gap-3">Phone</label>
@@ -244,7 +287,9 @@ const AddItem = () => {
                 placeholder="Phone"
                 className="p-3 text-lg border border-gray-300 rounded-md outline-none  w-full"
               />
-               {errors.phone && <span className="text-red-500 text-sm">{errors.phone}</span>}
+              {errors.phone && (
+                <span className="text-red-500 text-sm">{errors.phone}</span>
+              )}
             </div>
           </div>
         </div>

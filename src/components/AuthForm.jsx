@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { registerUser, signInUser } from "../fireBase/fireBaseAuth";
 import { validateUserAuthForm } from "../utils/validateForms";
+import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
   const [signState, setSignState] = useState("Sign In");
@@ -13,6 +14,7 @@ const AuthForm = () => {
 
   const [errors, setErrors] = useState({});
 
+  const navigate = useNavigate();
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -35,9 +37,38 @@ const AuthForm = () => {
     const { email, password, name, phone } = formData;
 
     if (signState === "Sign In") {
-      await signInUser(email, password);
+      const signInSuccess = await signInUser(email, password);
+      if (signInSuccess) {
+        setTimeout(() => {
+          console.log("Navigating to home...");
+          navigate("/");
+        }, 3000);
+
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          password: "",
+        });
+        setErrors({})
+      }
     } else {
-      await registerUser(name, email, phone, password);
+      const registerSuccess = await registerUser(name, email, phone, password);
+      console.log("register", registerSuccess);
+
+      if (registerSuccess) {
+        setTimeout(() => {
+          console.log("Navigating to home...");
+          navigate("/");
+        }, 3000);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          password: "",
+        });
+        setErrors({})
+      }
     }
   };
 
@@ -101,8 +132,8 @@ const AuthForm = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-md"
             />
             {errors.password && (
-                <span className="text-red-500 text-sm">{errors.password}</span>
-              )}
+              <span className="text-red-500 text-sm">{errors.password}</span>
+            )}
           </div>
           <button
             type="submit"
