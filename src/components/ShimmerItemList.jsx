@@ -7,7 +7,7 @@ const ShimmerItemList = ({ itemsCount }) => {
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 p-10">
       {Array(itemsCount)
         .fill()
-        .map((_, index) => (
+        .map((Item, index) => (
           <div key={index} className="bg-white border border-gray-300 rounded-lg overflow-hidden">
             <Skeleton height={160} />
             <div className="p-4">
