@@ -1,6 +1,5 @@
 import { useContext } from "react";
-import { SellItemContext } from "../contexts/SellItemContextProvider";
-import { SearchContext } from "../contexts/SearchContextProvider";
+import { SellItemContext,SearchContext } from "../contexts/ContextProvider";
 import ShimmerItemList from "./ShimmerItemList";
 import ItemList from "./ItemList";
 

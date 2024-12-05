@@ -167,7 +167,9 @@ const AuthForm = () => {
               >
                 Sign Up
               </span>
+            
             </span>
+            
           )}
         </form>
       </div>

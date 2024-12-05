@@ -1,12 +1,10 @@
-import React, { useContext, useReducer, useState } from "react";
+import React, { useContext, useReducer} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import olxLogo from "../assets/olxLogo.svg";
 import { FaUser } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
 import { HiMenu, HiX } from "react-icons/hi";
-import { SearchContext } from "../contexts/SearchContextProvider";
-import { AuthContext } from "../contexts/AuthContextProvider";
-import { UserContext } from "../contexts/UserContextProvider";
+import { SearchContext,AuthContext,UserContext } from "../contexts/ContextProvider";
 import { signOutUser } from "../fireBase/fireBaseUtils";
 
 const NavBar = () => {
